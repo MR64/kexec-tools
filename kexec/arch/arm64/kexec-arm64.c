@@ -7,6 +7,7 @@
 #include <assert.h>
 #include <ctype.h>
 #include <dirent.h>
+#include <elf.h>
 #include <errno.h>
 #include <getopt.h>
 #include <inttypes.h>
@@ -18,8 +19,6 @@
 #include <string.h>
 
 #include <sys/stat.h>
-
-#include <linux/elf.h>
 
 #include "dt-ops.h"
 #include "kexec.h"

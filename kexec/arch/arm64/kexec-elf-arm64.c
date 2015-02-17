@@ -5,11 +5,10 @@
 #define _GNU_SOURCE
 
 #include <assert.h>
+#include <elf.h>
 #include <errno.h>
 #include <getopt.h>
 #include <libfdt.h>
-
-#include <linux/elf.h>
 
 #include "dt-ops.h"
 #include "crashdump-arm64.h"
