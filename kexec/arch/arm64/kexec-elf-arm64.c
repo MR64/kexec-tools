@@ -9,9 +9,10 @@
 #include <errno.h>
 #include <getopt.h>
 #include <libfdt.h>
+#include <stdlib.h>
 
-#include "dt-ops.h"
 #include "crashdump-arm64.h"
+#include "dt-ops.h"
 #include "kexec-arm64.h"
 #include "fs2dt.h"
 #include "kexec-syscall.h"
@@ -45,16 +46,13 @@ on_exit:
 int elf_arm64_load(int argc, char **argv, const char *kernel_buf,
 	off_t kernel_size, struct kexec_info *info)
 {
+	char *header_option = NULL;
 	int result;
 	struct mem_ehdr ehdr;
 	bool found_header;
 	int i;
 
-	if (info->kexec_flags & KEXEC_ON_CRASH) {
-		fprintf(stderr, "kexec: kdump not yet supported on arm64\n");
-		return -EINVAL;
-	}
-
+	/* Parse the Elf file */
 	result = build_elf_exec_info(kernel_buf, kernel_size, &ehdr, 0);
 
 	if (result < 0) {
@@ -94,12 +92,29 @@ int elf_arm64_load(int argc, char **argv, const char *kernel_buf,
 		goto exit;
 	}
 
+	if (info->kexec_flags & KEXEC_ON_CRASH) {
+		result = load_crashdump_segments(info, &header_option);
+
+		if (result) {
+			fprintf(stderr, "kexec: creating eflcorehdr failed.\n");
+			goto exit;
+		}
+	}
+
+	if (info->kexec_flags & KEXEC_ON_CRASH)
+		modify_ehdr_for_crashmem(&ehdr);
+
 	result = elf_exec_load(&ehdr, info);
 
 	if (result) {
 		fprintf(stderr, "kexec: Elf load failed.\n");
 		goto exit;
 	}
+
+	if (info->kexec_flags & KEXEC_ON_CRASH)
+		set_crash_entry(&ehdr, info);
+	else
+		info->entry = (void *)virt_to_phys(ehdr.e_entry);
 
 	dbgprintf("%s: text_offset: %016lx\n", __func__, arm64_mem.text_offset);
 	dbgprintf("%s: image_size:  %016lx\n", __func__, arm64_mem.image_size);
@@ -108,9 +123,11 @@ int elf_arm64_load(int argc, char **argv, const char *kernel_buf,
 	dbgprintf("%s: e_entry:     %016llx -> %016lx\n", __func__,
 		ehdr.e_entry, virt_to_phys(ehdr.e_entry));
 
-	result = arm64_load_other_segments(info, virt_to_phys(ehdr.e_entry));
+	result = arm64_load_other_segments(info, (unsigned long)info->entry);
 exit:
 	free_elf_info(&ehdr);
+	if (header_option)
+		free(header_option);
 	return result;
 }
 
