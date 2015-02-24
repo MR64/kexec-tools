@@ -123,7 +123,8 @@ int elf_arm64_load(int argc, char **argv, const char *kernel_buf,
 	dbgprintf("%s: e_entry:     %016llx -> %016lx\n", __func__,
 		ehdr.e_entry, virt_to_phys(ehdr.e_entry));
 
-	result = arm64_load_other_segments(info, (unsigned long)info->entry);
+	result = arm64_load_other_segments(info, (unsigned long)info->entry,
+		header_option);
 exit:
 	free_elf_info(&ehdr);
 	if (header_option)
