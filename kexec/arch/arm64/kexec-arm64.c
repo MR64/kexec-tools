@@ -650,12 +650,15 @@ int arm64_load_other_segments(struct kexec_info *info,
 
 	dtb_max = dtb_2.size + 2 * 1024;
 
-	dtb_base = locate_hole(info, dtb_max, 128UL * 1024,
-		arm64_mem.memstart + arm64_mem.text_offset
-			+ arm64_mem.image_size,
-		_ALIGN_UP(arm64_mem.memstart + arm64_mem.text_offset,
-			512UL * 1024 * 1024),
-		1);
+	if (info->kexec_flags & KEXEC_ON_CRASH)
+		dtb_base = locate_dtb_in_crashmem(info, dtb_max);
+	else
+		dtb_base = locate_hole(info, dtb_max, 128UL * 1024,
+			arm64_mem.memstart + arm64_mem.text_offset
+				+ arm64_mem.image_size,
+			_ALIGN_UP(arm64_mem.memstart + arm64_mem.text_offset,
+				512UL * 1024 * 1024),
+			1);
 
 	dbgprintf("dtb:    base %lx, size %lxh (%ld)\n", dtb_base, dtb_2.size,
 		dtb_2.size);

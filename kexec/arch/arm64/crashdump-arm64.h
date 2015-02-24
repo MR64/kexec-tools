@@ -21,5 +21,6 @@ extern struct memory_ranges usablemem_rgns;
 int load_crashdump_segments(struct kexec_info *info, char **option);
 void modify_ehdr_for_crashmem(struct mem_ehdr *ehdr);
 void set_crash_entry(struct mem_ehdr *ehdr, struct kexec_info *info);
+off_t locate_dtb_in_crashmem(struct kexec_info *info, off_t dtb_size);
 
 #endif

@@ -306,3 +306,9 @@ void set_crash_entry(struct mem_ehdr *ehdr, struct kexec_info *info)
 {
 	info->entry = (void *)crash_reserved_mem.start + arm64_mem.text_offset;
 }
+
+off_t locate_dtb_in_crashmem(struct kexec_info *info, off_t dtb_size)
+{
+	return locate_hole(info, dtb_size, 128UL * 1024,
+		crash_reserved_mem.start, crash_reserved_mem.end, -1);
+}
