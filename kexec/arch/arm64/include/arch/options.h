@@ -29,7 +29,7 @@ static const char arm64_opts_usage[] __attribute__ ((unused)) =
 "     --command-line=STRING Set the kernel command line to STRING.\n"
 "     --dtb=FILE            Use FILE as the device tree blob.\n"
 "     --initrd=FILE         Use FILE as the kernel initial ramdisk.\n"
-"     --lite                Fast reboot, no memory integrity checks - currently NOT SUPPORTED.\n");
+"     --lite                Fast reboot, no memory integrity checks.\n"
 "     --port=ADDRESS        Purgatory output to port ADDRESS.\n"
 "     --ramdisk=FILE        Use FILE as the kernel initial ramdisk.\n"
 "     --reuse-cmdline       Use command line arg of primary kernel.\n";

@@ -96,7 +96,6 @@ int arch_process_options(int argc, char **argv)
 			break;
 		case OPT_LITE:
 			arm64_opts.lite = 1;
-			fprintf(stderr, "kexec: --lite option currently NOT SUPPORTED.\n");
 			break;
 		case OPT_PORT:
 			arm64_opts.port = strtoull(optarg, NULL, 0);
@@ -702,10 +701,9 @@ int arm64_load_other_segments(struct kexec_info *info,
 		add_segment_phys_virt(info, initrd_buf, initrd_size,
 				initrd_base, initrd_size, 0);
 
-	if (arm64_opts.lite) {
-		fprintf(stderr, "kexec: --lite option currently NOT SUPPORTED.\n");
-		return -ENOSYS;
-	} else {
+	if (arm64_opts.lite)
+		info->entry = (void *)kernel_entry;
+	else {
 		result = build_elf_rel_info(purgatory, purgatory_size, &ehdr,
 			0);
 
