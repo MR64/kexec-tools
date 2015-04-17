@@ -6,7 +6,8 @@
 #define OPT_INITRD	((OPT_MAX)+2)
 #define OPT_LITE	((OPT_MAX)+3)
 #define OPT_PORT	((OPT_MAX)+4)
-#define OPT_ARCH_MAX	((OPT_MAX)+5)
+#define OPT_REUSE_CMDLINE	((OPT_MAX+5))
+#define OPT_ARCH_MAX	((OPT_MAX)+6)
 
 #define KEXEC_ARCH_OPTIONS \
 	KEXEC_OPTIONS \
@@ -17,6 +18,7 @@
 	{ "lite",         0, NULL, OPT_LITE }, \
 	{ "port",         1, NULL, OPT_PORT }, \
 	{ "ramdisk",      1, NULL, OPT_INITRD }, \
+	{ "reuse-cmdline", 0, NULL, OPT_REUSE_CMDLINE }, \
 
 #define KEXEC_ARCH_OPT_STR KEXEC_OPT_STR /* Only accept long arch options. */
 #define KEXEC_ALL_OPTIONS KEXEC_ARCH_OPTIONS
@@ -29,7 +31,8 @@ static const char arm64_opts_usage[] __attribute__ ((unused)) =
 "     --initrd=FILE         Use FILE as the kernel initial ramdisk.\n"
 "     --lite                Fast reboot, no memory integrity checks - currently NOT SUPPORTED.\n");
 "     --port=ADDRESS        Purgatory output to port ADDRESS.\n"
-"     --ramdisk=FILE        Use FILE as the kernel initial ramdisk.\n";
+"     --ramdisk=FILE        Use FILE as the kernel initial ramdisk.\n"
+"     --reuse-cmdline       Use command line arg of primary kernel.\n";
 
 struct arm64_opts {
 	const char *command_line;
