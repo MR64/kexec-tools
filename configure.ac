@@ -30,6 +30,9 @@ case $target_cpu in
 	powerpc64 )
 		ARCH="ppc64"
 		;;
+	aarch64* )
+		ARCH="arm64"
+		;;
 	arm* )
 		ARCH="arm"
 		;;

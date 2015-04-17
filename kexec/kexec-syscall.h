@@ -51,8 +51,8 @@
 #ifdef __s390__
 #define __NR_kexec_load		277
 #endif
-#ifdef __arm__
-#define __NR_kexec_load		__NR_SYSCALL_BASE + 347  
+#if defined(__arm__) || defined(__arm64__)
+#define __NR_kexec_load		__NR_SYSCALL_BASE + 347
 #endif
 #if defined(__mips__)
 #define __NR_kexec_load                4311
@@ -91,6 +91,8 @@ static inline long kexec_reboot(void)
 #define KEXEC_ARCH_PPC64   (21 << 16)
 #define KEXEC_ARCH_IA_64   (50 << 16)
 #define KEXEC_ARCH_ARM     (40 << 16)
+#define KEXEC_ARCH_ARM64   (183 << 16)
+/* #define KEXEC_ARCH_AARCH64 (183 << 16) */
 #define KEXEC_ARCH_S390    (22 << 16)
 #define KEXEC_ARCH_SH      (42 << 16)
 #define KEXEC_ARCH_MIPS_LE (10 << 16)
@@ -98,5 +100,46 @@ static inline long kexec_reboot(void)
 #define KEXEC_ARCH_CRIS    (76 << 16)
 
 #define KEXEC_MAX_SEGMENTS 16
+
+#ifdef __i386__
+#define KEXEC_ARCH_NATIVE	KEXEC_ARCH_386
+#endif
+#ifdef __sh__
+#define KEXEC_ARCH_NATIVE	KEXEC_ARCH_SH
+#endif
+#ifdef __cris__
+#define KEXEC_ARCH_NATIVE	KEXEC_ARCH_CRIS
+#endif
+#ifdef __ia64__
+#define KEXEC_ARCH_NATIVE	KEXEC_ARCH_IA_64
+#endif
+#ifdef __powerpc64__
+#define KEXEC_ARCH_NATIVE	KEXEC_ARCH_PPC64
+#else
+ #ifdef __powerpc__
+ #define KEXEC_ARCH_NATIVE	KEXEC_ARCH_PPC
+ #endif
+#endif
+#ifdef __x86_64__
+#define KEXEC_ARCH_NATIVE	KEXEC_ARCH_X86_64
+#endif
+#ifdef __s390x__
+#define KEXEC_ARCH_NATIVE	KEXEC_ARCH_S390
+#endif
+#ifdef __s390__
+#define KEXEC_ARCH_NATIVE	KEXEC_ARCH_S390
+#endif
+#ifdef __arm__
+#define KEXEC_ARCH_NATIVE	KEXEC_ARCH_ARM
+#endif
+#if defined(__mips__)
+#define KEXEC_ARCH_NATIVE	KEXEC_ARCH_MIPS
+#endif
+#ifdef __m68k__
+#define KEXEC_ARCH_NATIVE	KEXEC_ARCH_68K
+#endif
+#if defined(__arm64__)
+#define KEXEC_ARCH_NATIVE	KEXEC_ARCH_ARM64
+#endif
 
 #endif /* KEXEC_SYSCALL_H */
