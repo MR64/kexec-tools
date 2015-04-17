@@ -50,6 +50,10 @@ KEXEC_SRCS += $($(ARCH)_ARCH_REUSE_INITRD)
 $(ARCH)_ARCH_INIT		= kexec/arch_init.c
 KEXEC_SRCS += $($(ARCH)_ARCH_INIT)
 
+dist				+= kexec/dt-ops.c kexec/dt-ops.h
+$(ARCH)_DT_OPS		=
+KEXEC_SRCS			+= $($(ARCH)_DT_OPS)
+
 include $(srcdir)/kexec/arch/alpha/Makefile
 include $(srcdir)/kexec/arch/arm/Makefile
 include $(srcdir)/kexec/arch/arm64/Makefile
