@@ -10,6 +10,7 @@
 #include <libfdt.h>
 #include <stdlib.h>
 
+#include "crashdump-arm64.h"
 #include "dt-ops.h"
 #include "image-header.h"
 #include "kexec-arm64.h"
@@ -97,13 +98,23 @@ int image_arm64_load(int argc, char **argv, const char *kernel_buf,
 
 	arm64_mem.page_offset = get_kernel_page_offset();
 
-	result = parse_iomem_single("Kernel code\n", &start, NULL);
+	if (info->kexec_flags & KEXEC_ON_CRASH) {
+		result = load_crashdump_segments(info, &header_option);
 
-	if (result) {
-		fprintf(stderr, "kexec: Could not get kernel code address.\n");
-		return -1;
+		if (result) {
+			fprintf(stderr, "kexec: load crashdump segments failed.\n");
+			return -1;
+		}
+		start = crash_reserved_mem.start;
+	} else {
+		result = parse_iomem_single("Kernel code\n", &start, NULL);
+
+		if (result) {
+			fprintf(stderr, "kexec: Could not get kernel code address.\n");
+			return -1;
+		}
+		start -= arm64_mem.text_offset;
 	}
-	start -= arm64_mem.text_offset;
 
 	/* Add kernel */
 	add_segment_phys_virt(info, kernel_buf, kernel_size,
@@ -112,7 +123,8 @@ int image_arm64_load(int argc, char **argv, const char *kernel_buf,
 
 	info->entry = (void *)start + arm64_mem.text_offset;
 
-	result = arm64_load_other_segments(info, (unsigned long)info->entry);
+	result = arm64_load_other_segments(info, (unsigned long)info->entry,
+		header_option);
 
 	if (header_option)
 		free(header_option);
