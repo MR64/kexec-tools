@@ -93,16 +93,17 @@ int elf_arm64_load(int argc, char **argv, const char *kernel_buf,
 	}
 
 	if (info->kexec_flags & KEXEC_ON_CRASH) {
+		/* allocate and initialize elf core header */
 		result = load_crashdump_segments(info, &header_option);
 
 		if (result) {
 			fprintf(stderr, "kexec: creating eflcorehdr failed.\n");
 			goto exit;
 		}
-	}
 
-	if (info->kexec_flags & KEXEC_ON_CRASH)
-		modify_ehdr_for_crashmem(&ehdr);
+		/* offset addresses to load vmlinux(elf_exec) in crash memory */
+		modify_ehdr_for_crashdump(&ehdr);
+	}
 
 	result = elf_exec_load(&ehdr, info);
 
@@ -112,7 +113,7 @@ int elf_arm64_load(int argc, char **argv, const char *kernel_buf,
 	}
 
 	if (info->kexec_flags & KEXEC_ON_CRASH)
-		set_crash_entry(&ehdr, info);
+		info->entry = get_crash_entry();
 	else
 		info->entry = (void *)virt_to_phys(ehdr.e_entry);
 

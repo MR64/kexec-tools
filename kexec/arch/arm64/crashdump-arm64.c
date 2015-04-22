@@ -288,7 +288,7 @@ int load_crashdump_segments(struct kexec_info *info, char **option)
 	return 0;
 }
 
-void modify_ehdr_for_crashmem(struct mem_ehdr *ehdr)
+void modify_ehdr_for_crashdump(struct mem_ehdr *ehdr)
 {
 	struct mem_phdr *phdr;
 	int i;
@@ -304,13 +304,7 @@ void modify_ehdr_for_crashmem(struct mem_ehdr *ehdr)
 	}
 }
 
-void set_crash_entry(struct mem_ehdr *ehdr, struct kexec_info *info)
+void *get_crash_entry(void)
 {
-	info->entry = (void *)crash_reserved_mem.start + arm64_mem.text_offset;
-}
-
-off_t locate_dtb_in_crashmem(struct kexec_info *info, off_t dtb_size)
-{
-	return locate_hole(info, dtb_size, 128UL * 1024,
-		crash_reserved_mem.start, crash_reserved_mem.end, -1);
+	return (void *)crash_reserved_mem.start + arm64_mem.text_offset;
 }
