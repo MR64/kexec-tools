@@ -3,6 +3,7 @@ arm64_PURGATORY_EXTRA_CFLAGS = \
 	-mcmodel=large \
 	-fno-stack-protector \
 	-fno-asynchronous-unwind-tables \
+	-fno-exceptions \
 	-Wundef \
 	-Werror-implicit-function-declaration \
 	-Wdeclaration-after-statement \
