@@ -2,6 +2,7 @@
  * ARM64 purgatory.
  */
 
+#include "cache.h"
 #include <stdint.h>
 #include <purgatory.h>
 
@@ -10,6 +11,8 @@
 extern uint32_t *arm64_sink;
 extern void (*arm64_kernel_entry)(uint64_t);
 extern uint64_t arm64_dtb_addr;
+extern uint64_t arm64_ram_start;
+extern uint64_t arm64_ram_end;
 
 static void wait_for_xmit_complete(void)
 {
@@ -44,14 +47,23 @@ void putchar(int ch)
 	}
 }
 
+uint64_t page_table[PAGE_TABLE_SIZE / sizeof(uint64_t)] __attribute__ ((aligned (PAGE_TABLE_SIZE))) = { };
+extern void enable_dcache(uint64_t , uint64_t , uint64_t *);
+extern void disable_dcache(uint64_t , uint64_t);
+
 void setup_arch(void)
 {
 	printf("purgatory: kernel_entry: %lx\n",
 		(unsigned long)arm64_kernel_entry);
 	printf("purgatory: dtb:          %lx\n", arm64_dtb_addr);
+	printf("purgatory: RAM start: %lx\n", arm64_ram_start);
+	printf("purgatory: RAM end: %lx\n", arm64_ram_end);
+
+	enable_dcache(arm64_ram_start, arm64_ram_end, page_table);
 }
 
 void post_verification_setup_arch(void)
 {
+	disable_dcache(arm64_ram_start, arm64_ram_end);
 	arm64_kernel_entry(arm64_dtb_addr);
 }
