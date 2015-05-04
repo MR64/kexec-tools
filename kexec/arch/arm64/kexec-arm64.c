@@ -28,6 +28,7 @@
 #include "fs2dt.h"
 #include "kexec-syscall.h"
 #include "arch/options.h"
+#include "types.h"
 
 /* Global varables the core kexec routines expect. */
 
@@ -588,9 +589,11 @@ static uint64_t read_sink(const char *command_line)
 int arm64_load_other_segments(struct kexec_info *info,
 	unsigned long kernel_entry, char *option)
 {
-	int result;
+	int result, i;
 	struct mem_ehdr ehdr;
 	unsigned long dtb_base;
+	unsigned long arm64_ram_start = -1;
+	unsigned long arm64_ram_end = 0;
 	unsigned long hole_min, hole_max;
 	char *initrd_buf = NULL;
 	uint64_t purgatory_sink;
@@ -720,6 +723,17 @@ int arm64_load_other_segments(struct kexec_info *info,
 
 		elf_rel_set_symbol(&info->rhdr, "arm64_dtb_addr", &dtb_base,
 				sizeof(dtb_base));
+		for (i = 0; i < info->nr_segments; i++) {
+			arm64_ram_start = min(arm64_ram_start,
+					(unsigned long)info->segment[i].mem);
+			arm64_ram_end = max(arm64_ram_end,
+				((unsigned long)info->segment[i].mem + 
+				info->segment[i].memsz));
+		}
+		elf_rel_set_symbol(&info->rhdr, "arm64_ram_start",
+				&arm64_ram_start, sizeof(arm64_ram_start));
+		elf_rel_set_symbol(&info->rhdr, "arm64_ram_end",
+				&arm64_ram_end, sizeof(arm64_ram_end));
 	}
 
 	return 0;

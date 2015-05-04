@@ -52,3 +52,13 @@ size arm64_kernel_entry
 arm64_dtb_addr:
 	.quad	0
 size arm64_dtb_addr
+
+.globl arm64_ram_start
+arm64_ram_start:
+	.quad	0
+size arm64_ram_start
+
+.globl arm64_ram_end
+arm64_ram_end:
+	.quad	0
+size arm64_ram_end
