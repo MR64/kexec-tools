@@ -215,7 +215,7 @@ static void dump_crash_ranges(void)
 {
 	int i;
 
-	if (!kexec_debug)
+	if (true) // don't need debugging
 		return;
 
 	dbgprintf("%s: kernel: %016llx - %016llx (%ld MiB)\n", __func__,

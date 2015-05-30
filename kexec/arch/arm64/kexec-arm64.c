@@ -109,7 +109,6 @@ int arch_process_options(int argc, char **argv)
 	}
 
 	arm64_opts.command_line = concat_cmdline(tmp_cmdline, append);
-	kexec_debug = 1; // FIXME: for debugging only.
 
 	dbgprintf("%s:%d: command_line: %s\n", __func__, __LINE__,
 		arm64_opts.command_line);
